@@ -114,13 +114,10 @@ type USBGetStateData struct {
 	ButtonHome               bool
 	ButtonPad                bool
 	ButtonMute               bool
-	UNK1                     bool
-	ButtonLeftFunction       bool  // DualSense Edge
-	ButtonRightFunction      bool  // DualSense Edge
-	ButtonLeftPaddle         bool  // DualSense Edge
-	ButtonRightPaddle        bool  // DualSense Edge
-	UNK2                     uint8 // unused
-	UNK_COUNTER              uint32
+	ButtonLeftFunction       bool // DualSense Edge
+	ButtonRightFunction      bool // DualSense Edge
+	ButtonLeftPaddle         bool // DualSense Edge
+	ButtonRightPaddle        bool // DualSense Edge
 	AngularVelocityX         int16
 	AngularVelocityZ         int16
 	AngularVelocityY         int16
@@ -145,10 +142,8 @@ type USBGetStateData struct {
 	MicMuted                 bool
 	PluggedUsbData           bool
 	PluggedUsbPower          bool
-	PluggedUnk1              uint8
 	PluggedExternalMic       bool
 	HapticLowPassFilter      bool
-	PluggedUnk3              uint8
 	AesCmac                  uint64
 }
 
@@ -198,13 +193,10 @@ func unpackUSBReportIn(data []byte) (USBReportIn, error) {
 			ButtonHome:          getNthLittleEndianBitUint8(report.USBGetStateData.OtherButtons, 0) == 1,
 			ButtonPad:           getNthLittleEndianBitUint8(report.USBGetStateData.OtherButtons, 1) == 1,
 			ButtonMute:          getNthLittleEndianBitUint8(report.USBGetStateData.OtherButtons, 2) == 1,
-			UNK1:                getNthLittleEndianBitUint8(report.USBGetStateData.OtherButtons, 3) == 1,
 			ButtonLeftFunction:  getNthLittleEndianBitUint8(report.USBGetStateData.OtherButtons, 4) == 1,
 			ButtonRightFunction: getNthLittleEndianBitUint8(report.USBGetStateData.OtherButtons, 5) == 1,
 			ButtonLeftPaddle:    getNthLittleEndianBitUint8(report.USBGetStateData.OtherButtons, 6) == 1,
 			ButtonRightPaddle:   getNthLittleEndianBitUint8(report.USBGetStateData.OtherButtons, 7) == 1,
-			UNK2:                report.USBGetStateData.UNK2,
-			UNK_COUNTER:         report.USBGetStateData.UNK_COUNTER,
 			AngularVelocityX:    report.USBGetStateData.AngularVelocityX,
 			AngularVelocityZ:    report.USBGetStateData.AngularVelocityZ,
 			AngularVelocityY:    report.USBGetStateData.AngularVelocityY,
@@ -243,10 +235,8 @@ func unpackUSBReportIn(data []byte) (USBReportIn, error) {
 			MicMuted:                 getNthLittleEndianBitUint8(report.USBGetStateData.PlugInfoA, 2) == 1,
 			PluggedUsbData:           getNthLittleEndianBitUint8(report.USBGetStateData.PlugInfoA, 3) == 1,
 			PluggedUsbPower:          getNthLittleEndianBitUint8(report.USBGetStateData.PlugInfoA, 4) == 1,
-			PluggedUnk1:              report.USBGetStateData.PlugInfoA >> 5,
 			PluggedExternalMic:       getNthLittleEndianBitUint8(report.USBGetStateData.PlugInfoB, 0) == 1,
 			HapticLowPassFilter:      getNthLittleEndianBitUint8(report.USBGetStateData.PlugInfoB, 1) == 1,
-			PluggedUnk3:              report.USBGetStateData.PlugInfoB >> 2,
 			AesCmac:                  report.USBGetStateData.AesCmac,
 		},
 	}, nil

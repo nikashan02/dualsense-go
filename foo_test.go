@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"strconv"
 	"testing"
+	"time"
 
 	"github.com/rivo/tview"
 	hid "github.com/sstallion/go-hid"
@@ -27,7 +28,7 @@ func displayStructAsTable(data USBGetStateData, table *tview.Table) {
 		row := table.GetRowCount()
 		table.SetCell(row, 0, tview.NewTableCell(fieldName).SetAlign(tview.AlignRight))
 
-		//handle bools
+		// handle bools
 		if b, ok := fieldValue.(bool); ok {
 			fieldValue = strconv.FormatBool(b)
 		}
@@ -44,11 +45,10 @@ func displayStatus(dualsense *DualSense) {
 	table := tview.NewTable()
 	go func() {
 		for {
-			reportIn := dualsense.GetReportIn()
+			getStateData := dualsense.getStateData
 			app.QueueUpdateDraw(func() {
-				displayStructAsTable(reportIn.USBGetStateData, table)
+				displayStructAsTable(getStateData, table)
 			})
-			// time.Sleep(100 * time.Millisecond) // Update every 100ms
 		}
 	}()
 	if err := app.SetRoot(table, true).EnableMouse(true).Run(); err != nil {
@@ -61,6 +61,22 @@ func TestMain(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
+	err = dualsense.Start(nil)
+	if err != nil {
+		panic(err)
+	}
 	defer dualsense.Close()
-	displayStatus(dualsense)
+	// displayStatus(dualsense)
+
+	dualsense.OnLeftStickXChange(func(value uint8) {
+		fmt.Println("Left Stick X:", value)
+	})
+
+	dualsense.OnButtonCrossChange(func(value bool) {
+		fmt.Println("Button Cross:", value)
+	})
+
+	for {
+		time.Sleep(30 * time.Second)
+	}
 }
