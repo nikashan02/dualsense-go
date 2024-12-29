@@ -100,9 +100,9 @@ func (d *DualSense) Start(initialSetStateData *SetStateData) error {
 	go d.listenReportIn()
 	var err error
 	if initialSetStateData == nil {
-		err = d.SetStateData(defaultSetStateData)
+		err = d.writeSetStateData(defaultSetStateData)
 	} else {
-		err = d.SetStateData(*initialSetStateData)
+		err = d.writeSetStateData(*initialSetStateData)
 	}
 	if err != nil {
 		return fmt.Errorf("setStateData: error trying to set initial state data for DualSense controller: %w", err)
@@ -400,19 +400,17 @@ func (d *DualSense) listenReportIn() {
 	}
 }
 
-func (d *DualSense) SetStateData(setStateData SetStateData) error {
+func (d *DualSense) writeSetStateData(setStateData SetStateData) error {
 	packedUSBReportOut, err := packUSBReportOut(setStateData)
 	if err != nil {
 		return fmt.Errorf("packUSBReportOut: error trying to pack DualSense controller output report: %w", err)
 	}
-	d.setStateDataMu.Lock()
 	_, err = d.device.Write(packedUSBReportOut)
 	if err != nil {
 		err = fmt.Errorf("device.Write: error trying to write DualSense controller output report: %w", err)
 	} else {
 		d.setStateData = setStateData
 	}
-	d.setStateDataMu.Unlock()
 	return err
 }
 
@@ -610,4 +608,786 @@ func (d *DualSense) OnPluggedExternalMicChange(callback func(bool)) {
 
 func (d *DualSense) OnHapticLowPassFilterChange(callback func(bool)) {
 	d.callbacks.OnHapticLowPassFilterChange = append(d.callbacks.OnHapticLowPassFilterChange, callback)
+}
+
+func (d *DualSense) SetStateData(setStateData SetStateData) error {
+	if d.setStateData != setStateData {
+		d.setStateDataMu.Lock()
+		err := d.writeSetStateData(setStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error writing new setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetEnableRunbleEmulation(enable bool) error {
+	if d.setStateData.EnableRumbleEmulation != enable {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.EnableRumbleEmulation = enable
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating EnableRunbleEmulation in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetUseRumbleNotHaptics(useRumbleNotHaptics bool) error {
+	if d.setStateData.UseRumbleNotHaptics != useRumbleNotHaptics {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.UseRumbleNotHaptics = useRumbleNotHaptics
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating UseRumbleNotHaptics in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetAllowRightTriggerFFB(allow bool) error {
+	if d.setStateData.AllowRightTriggerFFB != allow {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.AllowRightTriggerFFB = allow
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating AllowRightTriggerFFB in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetAllowLeftTriggerFFB(allow bool) error {
+	if d.setStateData.AllowLeftTriggerFFB != allow {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.AllowLeftTriggerFFB = allow
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating AllowLeftTriggerFFB in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetAllowHeadphoneVolume(allow bool) error {
+	if d.setStateData.AllowHeadphoneVolume != allow {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.AllowHeadphoneVolume = allow
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating AllowHeadphoneVolume in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetAllowSpeakerVolume(allow bool) error {
+	if d.setStateData.AllowSpeakerVolume != allow {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.AllowSpeakerVolume = allow
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating AllowSpeakerVolume in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetAllowMicVolume(allow bool) error {
+	if d.setStateData.AllowMicVolume != allow {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.AllowMicVolume = allow
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating AllowMicVolume in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetAllowAudioControl(allow bool) error {
+	if d.setStateData.AllowAudioControl != allow {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.AllowAudioControl = allow
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating AllowAudioControl in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetAllowMuteLight(allow bool) error {
+	if d.setStateData.AllowMuteLight != allow {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.AllowMuteLight = allow
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating AllowMuteLight in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetAllowAudioMute(allow bool) error {
+	if d.setStateData.AllowAudioMute != allow {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.AllowAudioMute = allow
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating AllowAudioMute in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetAllowLedColor(allow bool) error {
+	if d.setStateData.AllowLedColor != allow {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.AllowLedColor = allow
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating AllowLedColor in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetResetLights(reset bool) error {
+	if d.setStateData.ResetLights != reset {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.ResetLights = reset
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating ResetLights in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetAllowPlayerIndicators(allow bool) error {
+	if d.setStateData.AllowPlayerIndicators != allow {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.AllowPlayerIndicators = allow
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating AllowPlayerIndicators in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetAllowHapticLowPassFilter(allow bool) error {
+	if d.setStateData.AllowHapticLowPassFilter != allow {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.AllowHapticLowPassFilter = allow
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating AllowHapticLowPassFilter in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetAllowMotorPowerLevel(allow bool) error {
+	if d.setStateData.AllowMotorPowerLevel != allow {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.AllowMotorPowerLevel = allow
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating AllowMotorPowerLevel in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetAllowAudioControl2(allow bool) error {
+	if d.setStateData.AllowAudioControl2 != allow {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.AllowAudioControl2 = allow
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating AllowAudioControl2 in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetRumbleEmulationRight(value uint8) error {
+	if d.setStateData.RumbleEmulationRight != value {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.RumbleEmulationRight = value
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating RumbleEmulationRight in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetRumbleEmulationLeft(value uint8) error {
+	if d.setStateData.RumbleEmulationLeft != value {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.RumbleEmulationLeft = value
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating RumbleEmulationLeft in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetVolumeHeadphones(value uint8) error {
+	if d.setStateData.VolumeHeadphones != value {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.VolumeHeadphones = value
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating VolumeHeadphones in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetVolumeSpeaker(value uint8) error {
+	if d.setStateData.VolumeSpeaker != value {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.VolumeSpeaker = value
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating VolumeSpeaker in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetVolumeMic(value uint8) error {
+	if d.setStateData.VolumeMic != value {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.VolumeMic = value
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating VolumeMic in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetMicSelect(value MicSelectType) error {
+	if d.setStateData.MicSelect != value {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.MicSelect = value
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating MicSelect in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetEchoCancelEnable(enable bool) error {
+	if d.setStateData.EchoCancelEnable != enable {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.EchoCancelEnable = enable
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating EchoCancelEnable in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetNoiseCancelEnable(enable bool) error {
+	if d.setStateData.NoiseCancelEnable != enable {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.NoiseCancelEnable = enable
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating NoiseCancelEnable in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetOutputPathSelect(value uint8) error {
+	if d.setStateData.OutputPathSelect != value {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.OutputPathSelect = value
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating OutputPathSelect in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetInputPathSelect(value uint8) error {
+	if d.setStateData.InputPathSelect != value {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.InputPathSelect = value
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating InputPathSelect in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetMuteLight(value MuteLightMode) error {
+	if d.setStateData.MuteLight != value {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.MuteLight = value
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating MuteLight in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetTouchPowerSave(enable bool) error {
+	if d.setStateData.TouchPowerSave != enable {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.TouchPowerSave = enable
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating TouchPowerSave in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetMotionPowerSave(enable bool) error {
+	if d.setStateData.MotionPowerSave != enable {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.MotionPowerSave = enable
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating MotionPowerSave in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetHapticPowerSave(enable bool) error {
+	if d.setStateData.HapticPowerSave != enable {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.HapticPowerSave = enable
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating HapticPowerSave in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetAudioPowerSave(enable bool) error {
+	if d.setStateData.AudioPowerSave != enable {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.AudioPowerSave = enable
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating AudioPowerSave in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetMicMute(enable bool) error {
+	if d.setStateData.MicMute != enable {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.MicMute = enable
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating MicMute in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetSpeakerMute(enable bool) error {
+	if d.setStateData.SpeakerMute != enable {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.SpeakerMute = enable
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating SpeakerMute in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetHeadphoneMute(enable bool) error {
+	if d.setStateData.HeadphoneMute != enable {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.HeadphoneMute = enable
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating HeadphoneMute in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetHapticMute(enable bool) error {
+	if d.setStateData.HapticMute != enable {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.HapticMute = enable
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating HapticMute in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetRightTriggerFFB(params [11]uint8) error {
+	if d.setStateData.RightTriggerFFB != params {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.RightTriggerFFB = params
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating RightTriggerFFB in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetLeftTriggerFFB(params [11]uint8) error {
+	if d.setStateData.LeftTriggerFFB != params {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.LeftTriggerFFB = params
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating LeftTriggerFFB in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetTriggerMotorPowerReduction(level uint8) error {
+	if d.setStateData.TriggerMotorPowerReduction != level {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.TriggerMotorPowerReduction = level
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating TriggerMotorPowerReduction in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetRumbleMotorPowerReduction(level uint8) error {
+	if d.setStateData.RumbleMotorPowerReduction != level {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.RumbleMotorPowerReduction = level
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating RumbleMotorPowerReduction in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetSpeakerCompPreGain(gain uint8) error {
+	if d.setStateData.SpeakerCompPreGain != gain {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.SpeakerCompPreGain = gain
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating SpeakerCompPreGain in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetBeamformingEnable(enable bool) error {
+	if d.setStateData.BeamformingEnable != enable {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.BeamformingEnable = enable
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating BeamformingEnable in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetAllowLightBrightnessChange(allow bool) error {
+	if d.setStateData.AllowLightBrightnessChange != allow {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.AllowLightBrightnessChange = allow
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating AllowLightBrightnessChange in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetAllowColorLightFadeAnimation(allow bool) error {
+	if d.setStateData.AllowColorLightFadeAnimation != allow {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.AllowColorLightFadeAnimation = allow
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating AllowColorLightFadeAnimation in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetEnableImprovedRumbleEmulation(enable bool) error {
+	if d.setStateData.EnableImprovedRumbleEmulation != enable {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.EnableImprovedRumbleEmulation = enable
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating EnableImprovedRumbleEmulation in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetLightFadeAnimation(animation LightFadeAnimation) error {
+	if d.setStateData.LightFadeAnimation != animation {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.LightFadeAnimation = animation
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating LightFadeAnimation in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetLightBrightness(brightness LightBrightness) error {
+	if d.setStateData.LightBrightness != brightness {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.LightBrightness = brightness
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating LightBrightness in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetPlayerLight1(enable bool) error {
+	if d.setStateData.PlayerLight1 != enable {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.PlayerLight1 = enable
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating PlayerLight1 in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetPlayerLight2(enable bool) error {
+	if d.setStateData.PlayerLight2 != enable {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.PlayerLight2 = enable
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating PlayerLight2 in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetPlayerLight3(enable bool) error {
+	if d.setStateData.PlayerLight3 != enable {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.PlayerLight3 = enable
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating PlayerLight3 in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetPlayerLight4(enable bool) error {
+	if d.setStateData.PlayerLight4 != enable {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.PlayerLight4 = enable
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating PlayerLight4 in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetPlayerLight5(enable bool) error {
+	if d.setStateData.PlayerLight5 != enable {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.PlayerLight5 = enable
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating PlayerLight5 in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetPlayerLightFade(enable bool) error {
+	if d.setStateData.PlayerLightFade != enable {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.PlayerLightFade = enable
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating PlayerLightFade in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetLedRed(value uint8) error {
+	if d.setStateData.LedRed != value {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.LedRed = value
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating LedRed in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetLedGreen(value uint8) error {
+	if d.setStateData.LedGreen != value {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.LedGreen = value
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating LedGreen in setStateData: %w", err)
+		}
+	}
+	return nil
+}
+
+func (d *DualSense) SetLedBlue(value uint8) error {
+	if d.setStateData.LedBlue != value {
+		d.setStateDataMu.Lock()
+		newSetStateData := d.setStateData
+		newSetStateData.LedBlue = value
+		err := d.writeSetStateData(newSetStateData)
+		d.setStateDataMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("error updating LedBlue in setStateData: %w", err)
+		}
+	}
+	return nil
 }

@@ -68,12 +68,12 @@ func TestMain(t *testing.T) {
 	defer dualsense.Close()
 	// displayStatus(dualsense)
 
-	dualsense.OnLeftStickXChange(func(value uint8) {
-		fmt.Println("Left Stick X:", value)
+	dualsense.OnTriggerRightChange(func(value uint8) {
+		dualsense.SetLedRed(value)
 	})
 
-	dualsense.OnButtonCrossChange(func(value bool) {
-		fmt.Println("Button Cross:", value)
+	dualsense.OnTriggerLeftChange(func(value uint8) {
+		dualsense.SetLedBlue(value)
 	})
 
 	for {
