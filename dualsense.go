@@ -50,7 +50,8 @@ type callbacks struct {
 	OnAccelerometerYChange           []func(int16)
 	OnAccelerometerZChange           []func(int16)
 	OnTemperatureChange              []func(int8)
-	OnTouchDataChange                []func(TouchData)
+	OnTouchFinger1Change             []func(TouchFinger)
+	OnTouchFinger2Change             []func(TouchFinger)
 	OnTriggerRightStopLocationChange []func(uint8)
 	OnTriggerRightStatusChange       []func(uint8)
 	OnTriggerLeftStopLocationChange  []func(uint8)
@@ -69,7 +70,7 @@ type callbacks struct {
 
 type DualSense struct {
 	device           *hid.Device
-	getStateData     USBGetStateData
+	GetStateData     USBGetStateData
 	usbReportInClose chan bool
 	setStateData     SetStateData
 	setStateDataMu   sync.Mutex
@@ -135,244 +136,249 @@ func (d *DualSense) readReportIn() (USBReportIn, error) {
 }
 
 func (d *DualSense) triggerCallbacks(previousGetStateData USBGetStateData) {
-	if d.getStateData.LeftStickX != previousGetStateData.LeftStickX {
+	if d.GetStateData.LeftStickX != previousGetStateData.LeftStickX {
 		for _, callback := range d.callbacks.OnLeftStickXChange {
-			callback(d.getStateData.LeftStickX)
+			callback(d.GetStateData.LeftStickX)
 		}
 	}
-	if d.getStateData.LeftStickY != previousGetStateData.LeftStickY {
+	if d.GetStateData.LeftStickY != previousGetStateData.LeftStickY {
 		for _, callback := range d.callbacks.OnLeftStickYChange {
-			callback(d.getStateData.LeftStickY)
+			callback(d.GetStateData.LeftStickY)
 		}
 	}
-	if d.getStateData.RightStickX != previousGetStateData.RightStickX {
+	if d.GetStateData.RightStickX != previousGetStateData.RightStickX {
 		for _, callback := range d.callbacks.OnRightStickXChange {
-			callback(d.getStateData.RightStickX)
+			callback(d.GetStateData.RightStickX)
 		}
 	}
-	if d.getStateData.RightStickY != previousGetStateData.RightStickY {
+	if d.GetStateData.RightStickY != previousGetStateData.RightStickY {
 		for _, callback := range d.callbacks.OnRightStickYChange {
-			callback(d.getStateData.RightStickY)
+			callback(d.GetStateData.RightStickY)
 		}
 	}
-	if d.getStateData.TriggerLeft != previousGetStateData.TriggerLeft {
+	if d.GetStateData.TriggerLeft != previousGetStateData.TriggerLeft {
 		for _, callback := range d.callbacks.OnTriggerLeftChange {
-			callback(d.getStateData.TriggerLeft)
+			callback(d.GetStateData.TriggerLeft)
 		}
 	}
-	if d.getStateData.TriggerRight != previousGetStateData.TriggerRight {
+	if d.GetStateData.TriggerRight != previousGetStateData.TriggerRight {
 		for _, callback := range d.callbacks.OnTriggerRightChange {
-			callback(d.getStateData.TriggerRight)
+			callback(d.GetStateData.TriggerRight)
 		}
 	}
-	if d.getStateData.DPad != previousGetStateData.DPad {
+	if d.GetStateData.DPad != previousGetStateData.DPad {
 		for _, callback := range d.callbacks.OnDPadChange {
-			callback(d.getStateData.DPad)
+			callback(d.GetStateData.DPad)
 		}
 	}
-	if d.getStateData.ButtonSquare != previousGetStateData.ButtonSquare {
+	if d.GetStateData.ButtonSquare != previousGetStateData.ButtonSquare {
 		for _, callback := range d.callbacks.OnButtonSquareChange {
-			callback(d.getStateData.ButtonSquare)
+			callback(d.GetStateData.ButtonSquare)
 		}
 	}
-	if d.getStateData.ButtonCross != previousGetStateData.ButtonCross {
+	if d.GetStateData.ButtonCross != previousGetStateData.ButtonCross {
 		for _, callback := range d.callbacks.OnButtonCrossChange {
-			callback(d.getStateData.ButtonCross)
+			callback(d.GetStateData.ButtonCross)
 		}
 	}
-	if d.getStateData.ButtonCircle != previousGetStateData.ButtonCircle {
+	if d.GetStateData.ButtonCircle != previousGetStateData.ButtonCircle {
 		for _, callback := range d.callbacks.OnButtonCircleChange {
-			callback(d.getStateData.ButtonCircle)
+			callback(d.GetStateData.ButtonCircle)
 		}
 	}
-	if d.getStateData.ButtonTriangle != previousGetStateData.ButtonTriangle {
+	if d.GetStateData.ButtonTriangle != previousGetStateData.ButtonTriangle {
 		for _, callback := range d.callbacks.OnButtonTriangleChange {
-			callback(d.getStateData.ButtonTriangle)
+			callback(d.GetStateData.ButtonTriangle)
 		}
 	}
-	if d.getStateData.ButtonL1 != previousGetStateData.ButtonL1 {
+	if d.GetStateData.ButtonL1 != previousGetStateData.ButtonL1 {
 		for _, callback := range d.callbacks.OnButtonL1Change {
-			callback(d.getStateData.ButtonL1)
+			callback(d.GetStateData.ButtonL1)
 		}
 	}
-	if d.getStateData.ButtonR1 != previousGetStateData.ButtonR1 {
+	if d.GetStateData.ButtonR1 != previousGetStateData.ButtonR1 {
 		for _, callback := range d.callbacks.OnButtonR1Change {
-			callback(d.getStateData.ButtonR1)
+			callback(d.GetStateData.ButtonR1)
 		}
 	}
-	if d.getStateData.ButtonL2 != previousGetStateData.ButtonL2 {
+	if d.GetStateData.ButtonL2 != previousGetStateData.ButtonL2 {
 		for _, callback := range d.callbacks.OnButtonL2Change {
-			callback(d.getStateData.ButtonL2)
+			callback(d.GetStateData.ButtonL2)
 		}
 	}
-	if d.getStateData.ButtonR2 != previousGetStateData.ButtonR2 {
+	if d.GetStateData.ButtonR2 != previousGetStateData.ButtonR2 {
 		for _, callback := range d.callbacks.OnButtonR2Change {
-			callback(d.getStateData.ButtonR2)
+			callback(d.GetStateData.ButtonR2)
 		}
 	}
-	if d.getStateData.ButtonCreate != previousGetStateData.ButtonCreate {
+	if d.GetStateData.ButtonCreate != previousGetStateData.ButtonCreate {
 		for _, callback := range d.callbacks.OnButtonCreateChange {
-			callback(d.getStateData.ButtonCreate)
+			callback(d.GetStateData.ButtonCreate)
 		}
 	}
-	if d.getStateData.ButtonOptions != previousGetStateData.ButtonOptions {
+	if d.GetStateData.ButtonOptions != previousGetStateData.ButtonOptions {
 		for _, callback := range d.callbacks.OnButtonOptionsChange {
-			callback(d.getStateData.ButtonOptions)
+			callback(d.GetStateData.ButtonOptions)
 		}
 	}
-	if d.getStateData.ButtonL3 != previousGetStateData.ButtonL3 {
+	if d.GetStateData.ButtonL3 != previousGetStateData.ButtonL3 {
 		for _, callback := range d.callbacks.OnButtonL3Change {
-			callback(d.getStateData.ButtonL3)
+			callback(d.GetStateData.ButtonL3)
 		}
 	}
-	if d.getStateData.ButtonR3 != previousGetStateData.ButtonR3 {
+	if d.GetStateData.ButtonR3 != previousGetStateData.ButtonR3 {
 		for _, callback := range d.callbacks.OnButtonR3Change {
-			callback(d.getStateData.ButtonR3)
+			callback(d.GetStateData.ButtonR3)
 		}
 	}
-	if d.getStateData.ButtonHome != previousGetStateData.ButtonHome {
+	if d.GetStateData.ButtonHome != previousGetStateData.ButtonHome {
 		for _, callback := range d.callbacks.OnButtonHomeChange {
-			callback(d.getStateData.ButtonHome)
+			callback(d.GetStateData.ButtonHome)
 		}
 	}
-	if d.getStateData.ButtonPad != previousGetStateData.ButtonPad {
+	if d.GetStateData.ButtonPad != previousGetStateData.ButtonPad {
 		for _, callback := range d.callbacks.OnButtonPadChange {
-			callback(d.getStateData.ButtonPad)
+			callback(d.GetStateData.ButtonPad)
 		}
 	}
-	if d.getStateData.ButtonMute != previousGetStateData.ButtonMute {
+	if d.GetStateData.ButtonMute != previousGetStateData.ButtonMute {
 		for _, callback := range d.callbacks.OnButtonMuteChange {
-			callback(d.getStateData.ButtonMute)
+			callback(d.GetStateData.ButtonMute)
 		}
 	}
-	if d.getStateData.ButtonLeftFunction != previousGetStateData.ButtonLeftFunction {
+	if d.GetStateData.ButtonLeftFunction != previousGetStateData.ButtonLeftFunction {
 		for _, callback := range d.callbacks.OnButtonLeftFunctionChange {
-			callback(d.getStateData.ButtonLeftFunction)
+			callback(d.GetStateData.ButtonLeftFunction)
 		}
 	}
-	if d.getStateData.ButtonRightFunction != previousGetStateData.ButtonRightFunction {
+	if d.GetStateData.ButtonRightFunction != previousGetStateData.ButtonRightFunction {
 		for _, callback := range d.callbacks.OnButtonRightFunctionChange {
-			callback(d.getStateData.ButtonRightFunction)
+			callback(d.GetStateData.ButtonRightFunction)
 		}
 	}
-	if d.getStateData.ButtonLeftPaddle != previousGetStateData.ButtonLeftPaddle {
+	if d.GetStateData.ButtonLeftPaddle != previousGetStateData.ButtonLeftPaddle {
 		for _, callback := range d.callbacks.OnButtonLeftPaddleChange {
-			callback(d.getStateData.ButtonLeftPaddle)
+			callback(d.GetStateData.ButtonLeftPaddle)
 		}
 	}
-	if d.getStateData.ButtonRightPaddle != previousGetStateData.ButtonRightPaddle {
+	if d.GetStateData.ButtonRightPaddle != previousGetStateData.ButtonRightPaddle {
 		for _, callback := range d.callbacks.OnButtonRightPaddleChange {
-			callback(d.getStateData.ButtonRightPaddle)
+			callback(d.GetStateData.ButtonRightPaddle)
 		}
 	}
-	if d.getStateData.AngularVelocityX != previousGetStateData.AngularVelocityX {
+	if d.GetStateData.AngularVelocityX != previousGetStateData.AngularVelocityX {
 		for _, callback := range d.callbacks.OnAngularVelocityXChange {
-			callback(d.getStateData.AngularVelocityX)
+			callback(d.GetStateData.AngularVelocityX)
 		}
 	}
-	if d.getStateData.AngularVelocityZ != previousGetStateData.AngularVelocityZ {
+	if d.GetStateData.AngularVelocityZ != previousGetStateData.AngularVelocityZ {
 		for _, callback := range d.callbacks.OnAngularVelocityZChange {
-			callback(d.getStateData.AngularVelocityZ)
+			callback(d.GetStateData.AngularVelocityZ)
 		}
 	}
-	if d.getStateData.AngularVelocityY != previousGetStateData.AngularVelocityY {
+	if d.GetStateData.AngularVelocityY != previousGetStateData.AngularVelocityY {
 		for _, callback := range d.callbacks.OnAngularVelocityYChange {
-			callback(d.getStateData.AngularVelocityY)
+			callback(d.GetStateData.AngularVelocityY)
 		}
 	}
-	if d.getStateData.AccelerometerX != previousGetStateData.AccelerometerX {
+	if d.GetStateData.AccelerometerX != previousGetStateData.AccelerometerX {
 		for _, callback := range d.callbacks.OnAccelerometerXChange {
-			callback(d.getStateData.AccelerometerX)
+			callback(d.GetStateData.AccelerometerX)
 		}
 	}
-	if d.getStateData.AccelerometerY != previousGetStateData.AccelerometerY {
+	if d.GetStateData.AccelerometerY != previousGetStateData.AccelerometerY {
 		for _, callback := range d.callbacks.OnAccelerometerYChange {
-			callback(d.getStateData.AccelerometerY)
+			callback(d.GetStateData.AccelerometerY)
 		}
 	}
-	if d.getStateData.AccelerometerZ != previousGetStateData.AccelerometerZ {
+	if d.GetStateData.AccelerometerZ != previousGetStateData.AccelerometerZ {
 		for _, callback := range d.callbacks.OnAccelerometerZChange {
-			callback(d.getStateData.AccelerometerZ)
+			callback(d.GetStateData.AccelerometerZ)
 		}
 	}
-	if d.getStateData.Temperature != previousGetStateData.Temperature {
+	if d.GetStateData.Temperature != previousGetStateData.Temperature {
 		for _, callback := range d.callbacks.OnTemperatureChange {
-			callback(d.getStateData.Temperature)
+			callback(d.GetStateData.Temperature)
 		}
 	}
-	if d.getStateData.TouchData != previousGetStateData.TouchData {
-		for _, callback := range d.callbacks.OnTouchDataChange {
-			callback(d.getStateData.TouchData)
+	if d.GetStateData.TouchData.TouchFinger1 != previousGetStateData.TouchData.TouchFinger1 {
+		for _, callback := range d.callbacks.OnTouchFinger1Change {
+			callback(d.GetStateData.TouchData.TouchFinger1)
 		}
 	}
-	if d.getStateData.TriggerRightStopLocation != previousGetStateData.TriggerRightStopLocation {
+	if d.GetStateData.TouchData.TouchFinger2 != previousGetStateData.TouchData.TouchFinger2 {
+		for _, callback := range d.callbacks.OnTouchFinger2Change {
+			callback(d.GetStateData.TouchData.TouchFinger2)
+		}
+	}
+	if d.GetStateData.TriggerRightStopLocation != previousGetStateData.TriggerRightStopLocation {
 		for _, callback := range d.callbacks.OnTriggerRightStopLocationChange {
-			callback(d.getStateData.TriggerRightStopLocation)
+			callback(d.GetStateData.TriggerRightStopLocation)
 		}
 	}
-	if d.getStateData.TriggerRightStatus != previousGetStateData.TriggerRightStatus {
+	if d.GetStateData.TriggerRightStatus != previousGetStateData.TriggerRightStatus {
 		for _, callback := range d.callbacks.OnTriggerRightStatusChange {
-			callback(d.getStateData.TriggerRightStatus)
+			callback(d.GetStateData.TriggerRightStatus)
 		}
 	}
-	if d.getStateData.TriggerLeftStopLocation != previousGetStateData.TriggerLeftStopLocation {
+	if d.GetStateData.TriggerLeftStopLocation != previousGetStateData.TriggerLeftStopLocation {
 		for _, callback := range d.callbacks.OnTriggerLeftStopLocationChange {
-			callback(d.getStateData.TriggerLeftStopLocation)
+			callback(d.GetStateData.TriggerLeftStopLocation)
 		}
 	}
-	if d.getStateData.TriggerLeftStatus != previousGetStateData.TriggerLeftStatus {
+	if d.GetStateData.TriggerLeftStatus != previousGetStateData.TriggerLeftStatus {
 		for _, callback := range d.callbacks.OnTriggerLeftStatusChange {
-			callback(d.getStateData.TriggerLeftStatus)
+			callback(d.GetStateData.TriggerLeftStatus)
 		}
 	}
-	if d.getStateData.TriggerRightEffect != previousGetStateData.TriggerRightEffect {
+	if d.GetStateData.TriggerRightEffect != previousGetStateData.TriggerRightEffect {
 		for _, callback := range d.callbacks.OnTriggerRightEffectChange {
-			callback(d.getStateData.TriggerRightEffect)
+			callback(d.GetStateData.TriggerRightEffect)
 		}
 	}
-	if d.getStateData.TriggerLeftEffect != previousGetStateData.TriggerLeftEffect {
+	if d.GetStateData.TriggerLeftEffect != previousGetStateData.TriggerLeftEffect {
 		for _, callback := range d.callbacks.OnTriggerLeftEffectChange {
-			callback(d.getStateData.TriggerLeftEffect)
+			callback(d.GetStateData.TriggerLeftEffect)
 		}
 	}
-	if d.getStateData.PowerPercent != previousGetStateData.PowerPercent {
+	if d.GetStateData.PowerPercent != previousGetStateData.PowerPercent {
 		for _, callback := range d.callbacks.OnPowerPercentChange {
-			callback(d.getStateData.PowerPercent)
+			callback(d.GetStateData.PowerPercent)
 		}
 	}
-	if d.getStateData.PowerState != previousGetStateData.PowerState {
+	if d.GetStateData.PowerState != previousGetStateData.PowerState {
 		for _, callback := range d.callbacks.OnPowerStateChange {
-			callback(d.getStateData.PowerState)
+			callback(d.GetStateData.PowerState)
 		}
 	}
-	if d.getStateData.PluggedHeadphones != previousGetStateData.PluggedHeadphones {
+	if d.GetStateData.PluggedHeadphones != previousGetStateData.PluggedHeadphones {
 		for _, callback := range d.callbacks.OnPluggedHeadphonesChange {
-			callback(d.getStateData.PluggedHeadphones)
+			callback(d.GetStateData.PluggedHeadphones)
 		}
 	}
-	if d.getStateData.PluggedMic != previousGetStateData.PluggedMic {
+	if d.GetStateData.PluggedMic != previousGetStateData.PluggedMic {
 		for _, callback := range d.callbacks.OnPluggedMicChange {
-			callback(d.getStateData.PluggedMic)
+			callback(d.GetStateData.PluggedMic)
 		}
 	}
-	if d.getStateData.MicMuted != previousGetStateData.MicMuted {
+	if d.GetStateData.MicMuted != previousGetStateData.MicMuted {
 		for _, callback := range d.callbacks.OnMicMutedChange {
-			callback(d.getStateData.MicMuted)
+			callback(d.GetStateData.MicMuted)
 		}
 	}
-	if d.getStateData.PluggedUsbData != previousGetStateData.PluggedUsbData {
+	if d.GetStateData.PluggedUsbData != previousGetStateData.PluggedUsbData {
 		for _, callback := range d.callbacks.OnPluggedUsbDataChange {
-			callback(d.getStateData.PluggedUsbData)
+			callback(d.GetStateData.PluggedUsbData)
 		}
 	}
-	if d.getStateData.PluggedExternalMic != previousGetStateData.PluggedExternalMic {
+	if d.GetStateData.PluggedExternalMic != previousGetStateData.PluggedExternalMic {
 		for _, callback := range d.callbacks.OnPluggedExternalMicChange {
-			callback(d.getStateData.PluggedExternalMic)
+			callback(d.GetStateData.PluggedExternalMic)
 		}
 	}
-	if d.getStateData.HapticLowPassFilter != previousGetStateData.HapticLowPassFilter {
+	if d.GetStateData.HapticLowPassFilter != previousGetStateData.HapticLowPassFilter {
 		for _, callback := range d.callbacks.OnHapticLowPassFilterChange {
-			callback(d.getStateData.HapticLowPassFilter)
+			callback(d.GetStateData.HapticLowPassFilter)
 		}
 	}
 }
@@ -385,8 +391,8 @@ func (d *DualSense) listenReportIn() {
 		default:
 			reportIn, err := d.readReportIn()
 			if err == nil {
-				previousGetStateData := d.getStateData
-				d.getStateData = reportIn.USBGetStateData
+				previousGetStateData := d.GetStateData
+				d.GetStateData = reportIn.USBGetStateData
 				d.triggerCallbacks(previousGetStateData)
 			}
 			time.Sleep(d.pollingRate)
@@ -542,8 +548,12 @@ func (d *DualSense) OnTemperatureChange(callback func(int8)) {
 	d.callbacks.OnTemperatureChange = append(d.callbacks.OnTemperatureChange, callback)
 }
 
-func (d *DualSense) OnTouchDataChange(callback func(TouchData)) {
-	d.callbacks.OnTouchDataChange = append(d.callbacks.OnTouchDataChange, callback)
+func (d *DualSense) OnTouchFinger1Change(callback func(TouchFinger)) {
+	d.callbacks.OnTouchFinger1Change = append(d.callbacks.OnTouchFinger1Change, callback)
+}
+
+func (d *DualSense) OnTouchFinger2Change(callback func(TouchFinger)) {
+	d.callbacks.OnTouchFinger2Change = append(d.callbacks.OnTouchFinger2Change, callback)
 }
 
 func (d *DualSense) OnTriggerRightStopLocationChange(callback func(uint8)) {

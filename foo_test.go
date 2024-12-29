@@ -45,7 +45,7 @@ func displayStatus(dualsense *DualSense) {
 	table := tview.NewTable()
 	go func() {
 		for {
-			getStateData := dualsense.getStateData
+			getStateData := dualsense.GetStateData
 			app.QueueUpdateDraw(func() {
 				displayStructAsTable(getStateData, table)
 			})
